@@ -8,6 +8,7 @@ import com.apeter.blog.user.exception.UserExistException;
 import com.apeter.blog.user.mapping.UserMapping;
 import com.apeter.blog.user.service.UserApiService;
 import lombok.RequiredArgsConstructor;
+import org.apache.tomcat.jni.Local;
 import org.bson.types.ObjectId;
 import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.web.bind.annotation.*;
@@ -32,9 +33,14 @@ public class UserApiController {
     }
 
     @GetMapping(UserApiRoutes.ROOT)
-    public List<UserResponse> search() {
+    public List<UserResponse> search(
+            @RequestParam(required = false) String query,
+            @RequestParam(required = false, defaultValue = "0") Integer size,
+            @RequestParam(required = false, defaultValue = "0") Long skip
+    ) {
         return UserMapping.getInstance().getSearchMapping().convert(
-                userApiService.search()
+                userApiService.search(query, size, skip)
         );
     }
+
 }
