@@ -5,9 +5,12 @@ import com.apeter.blog.user.exception.UserExistException;
 import com.apeter.blog.user.model.UserDoc;
 import com.apeter.blog.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -27,5 +30,9 @@ public class UserApiService {
         userDoc = userRepository.save(userDoc);
 
         return userDoc;
+    }
+
+    public Optional<UserDoc> findById(ObjectId id){
+        return userRepository.findById(id);
     }
 }
