@@ -1,7 +1,9 @@
 package com.apeter.blog.user.service;
 
 import com.apeter.blog.user.api.request.RegistrationRequest;
+import com.apeter.blog.user.api.request.UserRequest;
 import com.apeter.blog.user.exception.UserExistException;
+import com.apeter.blog.user.exception.UserNoExistException;
 import com.apeter.blog.user.model.UserDoc;
 import com.apeter.blog.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -59,5 +61,22 @@ public class UserApiService {
         query.skip(skip);
 
         return mongoTemplate.find(query, UserDoc.class);
+    }
+
+    public UserDoc update(UserRequest request) throws UserNoExistException {
+        Optional<UserDoc> userDocOptional = userRepository.findById(request.getId());
+        if (!userDocOptional.isPresent()) {
+            throw new UserNoExistException();
+        }
+
+        UserDoc userDoc = userDocOptional.get();
+        userDoc.setFirstName(request.getFirstName());
+        userDoc.setLastName(request.getLastName());
+        userDoc.setAddress(request.getAddress());
+        userDoc.setCompany(request.getCompany());
+
+        userRepository.save(userDoc);
+
+        return userDoc;
     }
 }
