@@ -14,5 +14,5 @@ public class Address {
     private String street;
     private String suite;
     private String zipcode;
-    private String Point;
+    private Point point;
 }

@@ -1,6 +1,8 @@
 package com.apeter.blog.user.controller;
 
+import com.apeter.blog.user.api.request.UserRequest;
 import com.apeter.blog.user.api.response.UserFullResponse;
+import com.apeter.blog.user.exception.UserNoExistException;
 import com.apeter.blog.user.routes.UserApiRoutes;
 import com.apeter.blog.user.api.request.RegistrationRequest;
 import com.apeter.blog.user.api.response.UserResponse;
@@ -43,4 +45,13 @@ public class UserApiController {
         );
     }
 
+    @PutMapping(UserApiRoutes.BY_ID)
+    public UserFullResponse update(
+            @PathVariable String id,
+            @RequestBody UserRequest request
+    ) throws UserNoExistException {
+        return UserMapping.getInstance().getResponseFullMapping().convert(
+                userApiService.update(request)
+        );
+    }
 }
