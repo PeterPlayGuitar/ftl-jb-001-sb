@@ -11,7 +11,7 @@ import org.bson.types.ObjectId;
 @SuperBuilder
 @AllArgsConstructor
 public class UserResponse {
-    protected ObjectId id;
+    protected String id;
     protected String firstName;
     protected String lastName;
     protected String email;
