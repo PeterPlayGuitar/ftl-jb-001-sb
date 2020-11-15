@@ -1,5 +1,8 @@
 package com.apeter.blog.user.controller;
 
+import com.apeter.blog.base.api.request.SearchRequest;
+import com.apeter.blog.base.api.response.OkResponse;
+import com.apeter.blog.base.api.response.SearchResponse;
 import com.apeter.blog.user.api.request.UserRequest;
 import com.apeter.blog.user.api.response.UserFullResponse;
 import com.apeter.blog.user.exception.UserNoExistException;
@@ -24,41 +27,41 @@ public class UserApiController {
     private final UserApiService userApiService;
 
     @PostMapping(UserApiRoutes.ROOT)
-    public UserFullResponse registration(@RequestBody RegistrationRequest request) throws UserExistException {
-        return UserMapping.getInstance().getResponseFullMapping().convert(userApiService.registration(request));
+    public OkResponse<UserFullResponse> registration(@RequestBody RegistrationRequest request) throws UserExistException {
+//        Integer i = 3/0;
+
+        return OkResponse.of(UserMapping.getInstance().getResponseFullMapping().convert(userApiService.registration(request)));
     }
 
     @GetMapping(UserApiRoutes.BY_ID)
-    public UserFullResponse byId(@PathVariable ObjectId id) throws ChangeSetPersister.NotFoundException {
-        return UserMapping.getInstance().getResponseFullMapping().convert(
+    public OkResponse<UserFullResponse> byId(@PathVariable ObjectId id) throws ChangeSetPersister.NotFoundException {
+        return OkResponse.of(UserMapping.getInstance().getResponseFullMapping().convert(
                 userApiService.findById(id).orElseThrow(ChangeSetPersister.NotFoundException::new)
-        );
+        ));
     }
 
     @GetMapping(UserApiRoutes.ROOT)
-    public List<UserResponse> search(
-            @RequestParam(required = false) String query,
-            @RequestParam(required = false, defaultValue = "0") Integer size,
-            @RequestParam(required = false, defaultValue = "0") Long skip
+    public OkResponse<SearchResponse<UserResponse>> search(
+            @ModelAttribute SearchRequest request
     ) {
-        return UserMapping.getInstance().getSearchMapping().convert(
-                userApiService.search(query, size, skip)
-        );
+        return OkResponse.of(UserMapping.getInstance().getSearchMapping().convert(
+                userApiService.search(request)
+        ));
     }
 
     @PutMapping(UserApiRoutes.BY_ID)
-    public UserFullResponse update(
+    public OkResponse<UserFullResponse> update(
             @PathVariable String id,
             @RequestBody UserRequest request
     ) throws UserNoExistException {
-        return UserMapping.getInstance().getResponseFullMapping().convert(
+        return OkResponse.of(UserMapping.getInstance().getResponseFullMapping().convert(
                 userApiService.update(request)
-        );
+        ));
     }
 
     @DeleteMapping(UserApiRoutes.BY_ID)
-    public String deleteById(@PathVariable ObjectId id) {
+    public OkResponse<String> deleteById(@PathVariable ObjectId id) {
         userApiService.deleteById(id);
-        return HttpStatus.OK.toString();
+        return OkResponse.of(HttpStatus.OK.toString());
     }
 }

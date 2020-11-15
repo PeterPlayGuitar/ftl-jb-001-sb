@@ -1,5 +1,6 @@
 package com.apeter.blog.user.mapping;
 
+import com.apeter.blog.base.api.response.SearchResponse;
 import com.apeter.blog.base.mapping.BaseMapping;
 import com.apeter.blog.user.api.response.UserFullResponse;
 import com.apeter.blog.user.api.response.UserResponse;
@@ -49,17 +50,20 @@ public class UserMapping {
         }
     }
 
-    public static class SearchMapping extends BaseMapping<List<UserDoc>, List<UserResponse>>{
+    public static class SearchMapping extends BaseMapping<SearchResponse<UserDoc>, SearchResponse<UserResponse>> {
 
         private ResponseMapping responseMapping = new ResponseMapping();
 
         @Override
-        public List<UserResponse> convert(List<UserDoc> userDocs) {
-            return userDocs.stream().map(responseMapping::convert).collect(Collectors.toList());
+        public SearchResponse<UserResponse> convert(SearchResponse<UserDoc> searchResponse) {
+            return SearchResponse.of(
+                    searchResponse.getList().stream().map(responseMapping::convert).collect(Collectors.toList()),
+                    searchResponse.getCount()
+            );
         }
 
         @Override
-        public List<UserDoc> revert(List<UserResponse> userResponses) {
+        public SearchResponse<UserDoc> revert(SearchResponse<UserResponse> userResponses) {
             throw new RuntimeException("don't use this");
         }
     }
