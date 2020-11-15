@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.tomcat.jni.Local;
 import org.bson.types.ObjectId;
 import org.springframework.data.crossstore.ChangeSetPersister;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -53,5 +54,11 @@ public class UserApiController {
         return UserMapping.getInstance().getResponseFullMapping().convert(
                 userApiService.update(request)
         );
+    }
+
+    @DeleteMapping(UserApiRoutes.BY_ID)
+    public String deleteById(@PathVariable ObjectId id) {
+        userApiService.deleteById(id);
+        return HttpStatus.OK.toString();
     }
 }
