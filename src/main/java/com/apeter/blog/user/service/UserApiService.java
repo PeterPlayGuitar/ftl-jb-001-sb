@@ -79,4 +79,8 @@ public class UserApiService {
 
         return userDoc;
     }
+
+    public void deleteById(ObjectId id) {
+        userRepository.deleteById(id);
+    }
 }
