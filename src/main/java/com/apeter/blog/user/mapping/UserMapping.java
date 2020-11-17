@@ -2,16 +2,35 @@ package com.apeter.blog.user.mapping;
 
 import com.apeter.blog.base.api.response.SearchResponse;
 import com.apeter.blog.base.mapping.BaseMapping;
+import com.apeter.blog.user.api.request.UserRequest;
 import com.apeter.blog.user.api.response.UserFullResponse;
 import com.apeter.blog.user.api.response.UserResponse;
 import com.apeter.blog.user.model.UserDoc;
 import lombok.Getter;
 
-import java.util.List;
 import java.util.stream.Collectors;
 
 @Getter
 public class UserMapping {
+    public static class RequestMapping extends BaseMapping<UserRequest, UserDoc> {
+
+        @Override
+        public UserDoc convert(UserRequest userRequest) {
+            return UserDoc.builder()
+                    .id(userRequest.getId())
+                    .firstName(userRequest.getFirstName())
+                    .lastName(userRequest.getLastName())
+                    .email(userRequest.getEmail())
+                    .build();
+        }
+
+        @Override
+        public UserRequest revert(UserDoc userDoc) {
+            throw new RuntimeException("don't use this");
+        }
+    }
+
+
     public static class ResponseMapping extends BaseMapping<UserDoc, UserResponse> {
 
         @Override
@@ -68,6 +87,7 @@ public class UserMapping {
         }
     }
 
+    private final RequestMapping requestMapping = new RequestMapping();
     private final ResponseMapping responseMapping = new ResponseMapping();
     private final ResponseFullMapping responseFullMapping = new ResponseFullMapping();
     private final SearchMapping searchMapping = new SearchMapping();
