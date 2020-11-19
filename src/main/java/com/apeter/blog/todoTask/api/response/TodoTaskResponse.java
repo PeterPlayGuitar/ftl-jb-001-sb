@@ -1,0 +1,23 @@
+package com.apeter.blog.todoTask.api.response;
+
+import io.swagger.annotations.ApiModel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
+import org.bson.types.ObjectId;
+
+import java.util.List;
+
+@Getter
+@Setter
+@SuperBuilder
+@AllArgsConstructor
+@ApiModel(value = "todoTask response", description = "todoTask short data")
+public class TodoTaskResponse {
+        protected String id;
+        protected String title;
+        protected String ownerId;
+        protected Boolean completed;
+        protected List<String> files;
+}
