@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import javax.sql.rowset.WebRowSet;
@@ -35,8 +36,13 @@ public class HandleApiExceptions extends ResponseEntityExceptionHandler {
         return buildResponseEntity(ErrorResponse.of("user does not exist", HttpStatus.BAD_REQUEST));
     }
 
+    @ExceptionHandler(ResponseStatusException.class)
+    public ResponseEntity<Object> badRequest(UserNoExistException ex, WebRequest request) {
+        return buildResponseEntity(ErrorResponse.of("ResponseStatusException", HttpStatus.BAD_REQUEST));
+    }
+
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<Object> userNoExistException(Exception ex, WebRequest request) {
+    public ResponseEntity<Object> exception(Exception ex, WebRequest request) {
         return buildResponseEntity(ErrorResponse.of("Exception", HttpStatus.INTERNAL_SERVER_ERROR));
     }
 
