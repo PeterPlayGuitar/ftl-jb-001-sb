@@ -15,9 +15,10 @@ public class FileMapping {
         @Override
         public FileResponse convert(FileDoc fileDoc) {
             return FileResponse.builder()
-        .id(fileDoc.getId().toString())
-        .title(fileDoc.getTitle())
-        .ownerId(fileDoc.getOwnerId().toString())
+                    .id(fileDoc.getId().toString())
+                    .title(fileDoc.getTitle())
+                    .ownerId(fileDoc.getOwnerId().toString())
+                    .contentType(fileDoc.getContentType())
                     .build();
         }
 
