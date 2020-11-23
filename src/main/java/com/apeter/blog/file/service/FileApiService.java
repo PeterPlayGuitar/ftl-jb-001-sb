@@ -52,6 +52,7 @@ public class FileApiService {
                 .id(id)
                 .title(file.getOriginalFilename())
                 .ownerId(ownerId)
+                .contentType(file.getContentType())
                 .build();
 
         fileRepository.save(fileDoc);

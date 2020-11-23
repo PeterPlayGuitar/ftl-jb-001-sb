@@ -7,6 +7,7 @@ import com.apeter.blog.file.api.response.FileResponse;
 import com.apeter.blog.file.exception.FileExistException;
 import com.apeter.blog.file.exception.FileNoExistException;
 import com.apeter.blog.file.mapping.FileMapping;
+import com.apeter.blog.file.model.FileDoc;
 import com.apeter.blog.file.routes.FileApiRoutes;
 import com.apeter.blog.file.service.FileApiService;
 import com.apeter.blog.user.exception.UserNoExistException;
@@ -46,6 +47,9 @@ public class FileController {
             @ApiParam(value = "File id") @PathVariable ObjectId id,
             HttpServletResponse response
     ) throws ChangeSetPersister.NotFoundException, IOException {
+        FileDoc fileDoc = fileApiService.findById(id).orElseThrow();
+        response.addHeader("Content-Type", fileDoc.getContentType());
+        response.addHeader("Content-Disposition", "attachment; filename*=UTF-8''" + fileDoc.getTitle());
         FileCopyUtils.copy(fileApiService.downloadById(id), response.getOutputStream());
     }
 }

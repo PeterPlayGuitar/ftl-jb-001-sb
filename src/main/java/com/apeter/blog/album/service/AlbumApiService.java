@@ -8,9 +8,13 @@ import com.apeter.blog.album.exception.AlbumExistException;
 import com.apeter.blog.album.exception.AlbumNoExistException;
 import com.apeter.blog.album.model.AlbumDoc;
 import com.apeter.blog.album.repository.AlbumRepository;
+import com.apeter.blog.photo.api.request.PhotoSearchRequest;
+import com.apeter.blog.photo.model.PhotoDoc;
+import com.apeter.blog.photo.service.PhotoApiService;
 import com.apeter.blog.user.exception.UserNoExistException;
 import com.apeter.blog.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.val;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -28,10 +32,11 @@ public class AlbumApiService {
     private final AlbumRepository albumRepository;
     private final MongoTemplate mongoTemplate;
     private final UserRepository userRepository;
+    private final PhotoApiService photoApiService;
 
     public AlbumDoc create(AlbumRequest request) throws AlbumExistException, UserNoExistException {
 
-        if(userRepository.findById(request.getOwnerId()).isEmpty())
+        if (userRepository.findById(request.getOwnerId()).isEmpty())
             throw new UserNoExistException();
 
         AlbumDoc albumDoc = AlbumMapping.getInstance().getRequestMapping().convert(request);
@@ -82,7 +87,14 @@ public class AlbumApiService {
     }
 
     public void deleteById(ObjectId id) {
+        val photoDocs = photoApiService.search(
+                PhotoSearchRequest.builder()
+                        .albumId(id)
+                        .size(10000)
+                        .build()
+        ).getList();
+        for (PhotoDoc photoDoc : photoDocs)
+            photoApiService.deleteById(photoDoc.getId());
         albumRepository.deleteById(id);
-        // TODO: delete photos
     }
 }

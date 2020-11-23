@@ -13,7 +13,8 @@ import org.bson.types.ObjectId;
 @AllArgsConstructor
 @ApiModel(value = "file response", description = "file short data")
 public class FileResponse {
-        protected String id;
-        protected String title;
-        protected String ownerId;
+    protected String id;
+    protected String title;
+    protected String ownerId;
+    protected String contentType;
 }
