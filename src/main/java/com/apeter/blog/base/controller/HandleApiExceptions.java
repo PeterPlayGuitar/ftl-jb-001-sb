@@ -1,5 +1,7 @@
 package com.apeter.blog.base.controller;
 
+import com.apeter.blog.auth.exceptions.AuthException;
+import com.apeter.blog.auth.exceptions.NoAccessException;
 import com.apeter.blog.base.api.response.ErrorResponse;
 import com.apeter.blog.user.exception.UserExistException;
 import com.apeter.blog.user.exception.UserNoExistException;
@@ -39,6 +41,16 @@ public class HandleApiExceptions extends ResponseEntityExceptionHandler {
     @ExceptionHandler(ResponseStatusException.class)
     public ResponseEntity<Object> badRequest(UserNoExistException ex, WebRequest request) {
         return buildResponseEntity(ErrorResponse.of("ResponseStatusException", HttpStatus.BAD_REQUEST));
+    }
+
+    @ExceptionHandler(AuthException.class)
+    public ResponseEntity<Object> authException(AuthException ex, WebRequest request) {
+        return buildResponseEntity(ErrorResponse.of("AuthException", HttpStatus.UNAUTHORIZED));
+    }
+
+    @ExceptionHandler(NoAccessException.class)
+    public ResponseEntity<Object> authException(NoAccessException ex, WebRequest request) {
+        return buildResponseEntity(ErrorResponse.of("NoAccessException", HttpStatus.FORBIDDEN));
     }
 
     @ExceptionHandler(Exception.class)

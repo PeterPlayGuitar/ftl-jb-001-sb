@@ -28,18 +28,6 @@ import java.util.List;
 public class UserApiController {
     private final UserApiService userApiService;
 
-    @PostMapping(UserApiRoutes.ROOT)
-    @ApiOperation(value = "Register", notes = "Use this when you need to register new user")
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Success"),
-            @ApiResponse(code = 400, message = "User already exists")
-    })
-    public OkResponse<UserFullResponse> registration(@RequestBody RegistrationRequest request) throws UserExistException {
-//        Integer i = 3/0;
-
-        return OkResponse.of(UserMapping.getInstance().getResponseFullMapping().convert(userApiService.registration(request)));
-    }
-
     @GetMapping(UserApiRoutes.BY_ID)
     @ApiOperation(value = "Find user by if", notes = "Use this when you need to find user by id")
     @ApiResponses(
