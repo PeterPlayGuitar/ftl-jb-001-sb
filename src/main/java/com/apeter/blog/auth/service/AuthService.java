@@ -3,6 +3,7 @@ package com.apeter.blog.auth.service;
 import com.apeter.blog.auth.api.request.AuthRequest;
 import com.apeter.blog.auth.entity.CustomUserDetails;
 import com.apeter.blog.auth.exceptions.AuthException;
+import com.apeter.blog.base.service.EmailSenderService;
 import com.apeter.blog.security.JwtFiler;
 import com.apeter.blog.security.JwtProvider;
 import com.apeter.blog.user.exception.UserNoExistException;
@@ -22,6 +23,7 @@ public class AuthService {
 
     private final UserRepository userRepository;
     private final JwtProvider jwtProvider;
+    private final EmailSenderService emailSenderService;
 
     public CustomUserDetails loadUserByEmail(String email) throws UserNoExistException {
         UserDoc userDoc = userRepository.findByEmail(email).orElseThrow(UserNoExistException::new);
@@ -33,6 +35,10 @@ public class AuthService {
         if (userDoc.getPassword().equals((UserDoc.hexPassword(authRequest.getPassword()))) == false) {
             userDoc.setFailLogin(userDoc.getFailLogin() + 1);
             userRepository.save(userDoc);
+
+            if (userDoc.getFailLogin() >= 5) {
+                emailSenderService.sendEmailAlert(userDoc.getEmail());
+            }
 
             throw new AuthException();
         }

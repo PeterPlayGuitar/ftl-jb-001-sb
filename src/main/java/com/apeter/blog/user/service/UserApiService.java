@@ -5,6 +5,7 @@ import com.apeter.blog.auth.exceptions.NoAccessException;
 import com.apeter.blog.auth.service.AuthService;
 import com.apeter.blog.base.api.request.SearchRequest;
 import com.apeter.blog.base.api.response.SearchResponse;
+import com.apeter.blog.base.service.EmailSenderService;
 import com.apeter.blog.user.api.request.RegistrationRequest;
 import com.apeter.blog.user.api.request.UserRequest;
 import com.apeter.blog.user.exception.UserExistException;
@@ -29,6 +30,7 @@ public class UserApiService {
     private final UserRepository userRepository;
     private final MongoTemplate mongoTemplate;
     private final AuthService authService;
+    private final EmailSenderService emailSenderService;
 
     public UserDoc registration(RegistrationRequest request) throws UserExistException {
 
@@ -40,6 +42,8 @@ public class UserApiService {
         userDoc.setEmail(request.getEmail());
         userDoc.setPassword(UserDoc.hexPassword(request.getPassword()));
         userDoc = userRepository.save(userDoc);
+
+        emailSenderService.sendEmailRegistration(request.getEmail());
 
         return userDoc;
     }
