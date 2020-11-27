@@ -12,9 +12,6 @@ import org.bson.types.ObjectId;
 @Getter
 @Setter
 @SuperBuilder
-@NoArgsConstructor
 @AllArgsConstructor
 public class TodoTaskSearchRequest extends SearchRequest {
-    @ApiParam(name = "Owner Id", value = "Search by ownerId", required = true)
-    private ObjectId ownerId;
 }

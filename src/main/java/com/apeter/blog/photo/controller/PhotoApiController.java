@@ -1,6 +1,8 @@
 package com.apeter.blog.photo.controller;
 
 import com.apeter.blog.album.exception.AlbumNoExistException;
+import com.apeter.blog.auth.exceptions.AuthException;
+import com.apeter.blog.auth.exceptions.NoAccessException;
 import com.apeter.blog.base.api.request.SearchRequest;
 import com.apeter.blog.base.api.response.OkResponse;
 import com.apeter.blog.base.api.response.SearchResponse;
@@ -70,7 +72,7 @@ public class PhotoApiController {
     public OkResponse<PhotoResponse> update(
             @ApiParam(value = "Photo id") @PathVariable String id,
             @RequestBody PhotoRequest request
-    ) throws PhotoNoExistException {
+    ) throws PhotoNoExistException, NoAccessException, AuthException {
         return OkResponse.of(PhotoMapping.getInstance().getResponseMapping().convert(
                 photoApiService.update(request)
         ));
@@ -86,7 +88,7 @@ public class PhotoApiController {
     public OkResponse<String> deleteById(
             @ApiParam(value = "Photo id")
             @PathVariable ObjectId id
-    ) {
+    ) throws NoAccessException, AuthException, ChangeSetPersister.NotFoundException {
         photoApiService.deleteById(id);
         return OkResponse.of(HttpStatus.OK.toString());
     }

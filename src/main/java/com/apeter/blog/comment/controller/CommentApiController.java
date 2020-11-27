@@ -1,6 +1,8 @@
 package com.apeter.blog.comment.controller;
 
 import com.apeter.blog.article.exception.ArticleNoExistException;
+import com.apeter.blog.auth.exceptions.AuthException;
+import com.apeter.blog.auth.exceptions.NoAccessException;
 import com.apeter.blog.base.api.request.SearchRequest;
 import com.apeter.blog.base.api.response.OkResponse;
 import com.apeter.blog.base.api.response.SearchResponse;
@@ -35,7 +37,7 @@ public class CommentApiController {
             @ApiResponse(code = 200, message = "Success"),
             @ApiResponse(code = 400, message = "Comment already exists")
     })
-    public OkResponse<CommentResponse> create(@RequestBody CommentRequest request) throws CommentExistException, UserNoExistException, ArticleNoExistException {
+    public OkResponse<CommentResponse> create(@RequestBody CommentRequest request) throws ArticleNoExistException, AuthException {
 //        Integer i = 3/0;
 
         return OkResponse.of(CommentMapping.getInstance().getResponseMapping().convert(commentApiService.create(request)));
@@ -82,7 +84,7 @@ public class CommentApiController {
     public OkResponse<CommentResponse> update(
             @ApiParam(value = "Comment id") @PathVariable String id,
             @RequestBody CommentRequest request
-    ) throws CommentNoExistException {
+    ) throws CommentNoExistException, NoAccessException, AuthException {
         return OkResponse.of(CommentMapping.getInstance().getResponseMapping().convert(
                 commentApiService.update(request)
         ));
@@ -98,7 +100,7 @@ public class CommentApiController {
     public OkResponse<String> deleteById(
             @ApiParam(value = "Comment id")
             @PathVariable ObjectId id
-    ) {
+    ) throws NoAccessException, AuthException, ChangeSetPersister.NotFoundException {
         commentApiService.deleteById(id);
         return OkResponse.of(HttpStatus.OK.toString());
     }

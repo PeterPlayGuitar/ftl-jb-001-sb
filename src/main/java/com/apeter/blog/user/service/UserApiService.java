@@ -1,5 +1,8 @@
 package com.apeter.blog.user.service;
 
+import com.apeter.blog.auth.exceptions.AuthException;
+import com.apeter.blog.auth.exceptions.NoAccessException;
+import com.apeter.blog.auth.service.AuthService;
 import com.apeter.blog.base.api.request.SearchRequest;
 import com.apeter.blog.base.api.response.SearchResponse;
 import com.apeter.blog.user.api.request.RegistrationRequest;
@@ -25,6 +28,7 @@ import java.util.Optional;
 public class UserApiService {
     private final UserRepository userRepository;
     private final MongoTemplate mongoTemplate;
+    private final AuthService authService;
 
     public UserDoc registration(RegistrationRequest request) throws UserExistException {
 
@@ -67,13 +71,9 @@ public class UserApiService {
         return SearchResponse.of(userDocs, count);
     }
 
-    public UserDoc update(UserRequest request) throws UserNoExistException {
-        Optional<UserDoc> userDocOptional = userRepository.findById(request.getId());
-        if (!userDocOptional.isPresent()) {
-            throw new UserNoExistException();
-        }
+    public UserDoc update(UserRequest request) throws AuthException {
+        UserDoc userDoc = authService.currentUser();
 
-        UserDoc userDoc = userDocOptional.get();
         userDoc.setFirstName(request.getFirstName());
         userDoc.setLastName(request.getLastName());
         userDoc.setAddress(request.getAddress());
@@ -84,7 +84,9 @@ public class UserApiService {
         return userDoc;
     }
 
-    public void deleteById(ObjectId id) {
+    public void deleteById(ObjectId id) throws AuthException, NoAccessException {
+        if (!authService.currentUser().getId().equals(id))
+            throw new NoAccessException();
         userRepository.deleteById(id);
     }
 }

@@ -3,6 +3,8 @@ package com.apeter.blog.base.controller;
 import com.apeter.blog.auth.exceptions.AuthException;
 import com.apeter.blog.auth.exceptions.NoAccessException;
 import com.apeter.blog.base.api.response.ErrorResponse;
+import com.apeter.blog.comment.exception.CommentNoExistException;
+import com.apeter.blog.todoTask.exception.TodoTaskNoExistException;
 import com.apeter.blog.user.exception.UserExistException;
 import com.apeter.blog.user.exception.UserNoExistException;
 import org.springframework.data.crossstore.ChangeSetPersister;
@@ -47,6 +49,17 @@ public class HandleApiExceptions extends ResponseEntityExceptionHandler {
     public ResponseEntity<Object> authException(AuthException ex, WebRequest request) {
         return buildResponseEntity(ErrorResponse.of("AuthException", HttpStatus.UNAUTHORIZED));
     }
+
+    @ExceptionHandler(TodoTaskNoExistException.class)
+    public ResponseEntity<Object> todoTaskNoExistException(TodoTaskNoExistException ex, WebRequest request) {
+        return buildResponseEntity(ErrorResponse.of("TodoTaskNoExistException", HttpStatus.NOT_FOUND));
+    }
+
+    @ExceptionHandler(CommentNoExistException.class)
+    public ResponseEntity<Object> commentNoExistException(CommentNoExistException ex, WebRequest request) {
+        return buildResponseEntity(ErrorResponse.of("CommentNoExistException", HttpStatus.NOT_FOUND));
+    }
+
 
     @ExceptionHandler(NoAccessException.class)
     public ResponseEntity<Object> authException(NoAccessException ex, WebRequest request) {

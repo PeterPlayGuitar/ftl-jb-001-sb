@@ -11,7 +11,6 @@ import org.bson.types.ObjectId;
 @Setter
 @ApiModel(value = "User request", description = "model for update user")
 public class UserRequest {
-    private ObjectId id;
     private String firstName;
     private String lastName;
     private String email;

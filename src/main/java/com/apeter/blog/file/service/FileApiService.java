@@ -1,12 +1,17 @@
 package com.apeter.blog.file.service;
 
+import com.apeter.blog.auth.exceptions.AuthException;
+import com.apeter.blog.auth.exceptions.NoAccessException;
+import com.apeter.blog.auth.service.AuthService;
 import com.apeter.blog.base.api.request.SearchRequest;
 import com.apeter.blog.base.api.response.SearchResponse;
+import com.apeter.blog.base.service.CheckAccess;
 import com.apeter.blog.file.exception.FileNoExistException;
 import com.apeter.blog.file.mapping.FileMapping;
 import com.apeter.blog.file.model.FileDoc;
 import com.apeter.blog.file.repository.FileRepository;
 import com.apeter.blog.user.exception.UserNoExistException;
+import com.apeter.blog.user.model.UserDoc;
 import com.apeter.blog.user.repository.UserRepository;
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
@@ -30,15 +35,16 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class FileApiService {
+public class FileApiService extends CheckAccess<FileDoc> {
     private final FileRepository fileRepository;
     private final MongoTemplate mongoTemplate;
     private final GridFsTemplate gridFsTemplate;
     private final GridFsOperations gridFsOperations;
     private final UserRepository userRepository;
+    private final AuthService authService;
 
-    public FileDoc create(MultipartFile file, ObjectId ownerId) throws IOException, UserNoExistException {
-        if (userRepository.findById(ownerId).isEmpty()) throw new UserNoExistException();
+    public FileDoc create(MultipartFile file) throws IOException, AuthException {
+        UserDoc owner = authService.currentUser();
 
         DBObject metaData = new BasicDBObject();
         metaData.put("type", file.getContentType());
@@ -51,7 +57,7 @@ public class FileApiService {
         FileDoc fileDoc = FileDoc.builder()
                 .id(id)
                 .title(file.getOriginalFilename())
-                .ownerId(ownerId)
+                .ownerId(owner.getId())
                 .contentType(file.getContentType())
                 .build();
 
@@ -92,10 +98,22 @@ public class FileApiService {
         return SearchResponse.of(fileDocs, count);
     }
 
-    public void deleteById(ObjectId id) {
+    public void deleteById(ObjectId id) throws NoAccessException, AuthException, ChangeSetPersister.NotFoundException {
+        checkAccess(fileRepository.findById(id).orElseThrow(ChangeSetPersister.NotFoundException::new));
+
         gridFsTemplate.delete(new Query(
                 Criteria.where("_id").is(id)
         ));
         fileRepository.deleteById(id);
+    }
+
+    @Override
+    protected ObjectId getOwnerFromEntity(FileDoc entity) {
+        return entity.getOwnerId();
+    }
+
+    @Override
+    protected AuthService authService() {
+        return authService;
     }
 }

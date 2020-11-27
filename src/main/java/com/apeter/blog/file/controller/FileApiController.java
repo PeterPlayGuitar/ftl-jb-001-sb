@@ -1,5 +1,7 @@
 package com.apeter.blog.file.controller;
 
+import com.apeter.blog.auth.exceptions.AuthException;
+import com.apeter.blog.auth.exceptions.NoAccessException;
 import com.apeter.blog.base.api.request.SearchRequest;
 import com.apeter.blog.base.api.response.OkResponse;
 import com.apeter.blog.base.api.response.SearchResponse;
@@ -63,7 +65,7 @@ public class FileApiController {
     public OkResponse<String> deleteById(
             @ApiParam(value = "File id")
             @PathVariable ObjectId id
-    ) {
+    ) throws NoAccessException, AuthException, ChangeSetPersister.NotFoundException {
         fileApiService.deleteById(id);
         return OkResponse.of(HttpStatus.OK.toString());
     }

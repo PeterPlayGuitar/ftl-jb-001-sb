@@ -1,6 +1,8 @@
 package com.apeter.blog.photo.controller;
 
 import com.apeter.blog.album.exception.AlbumNoExistException;
+import com.apeter.blog.auth.exceptions.AuthException;
+import com.apeter.blog.auth.exceptions.NoAccessException;
 import com.apeter.blog.base.api.response.OkResponse;
 import com.apeter.blog.file.api.response.FileResponse;
 import com.apeter.blog.file.mapping.FileMapping;
@@ -40,10 +42,9 @@ public class PhotoController {
     public @ResponseBody
     OkResponse<PhotoResponse> create(
             @RequestParam MultipartFile file,
-            @RequestParam ObjectId ownerId,
             @RequestParam ObjectId albumId
-    ) throws IOException, UserNoExistException, PhotoExistException, AlbumNoExistException {
-        return OkResponse.of(PhotoMapping.getInstance().getResponseMapping().convert(photoApiService.create(file, ownerId, albumId)));
+    ) throws IOException, AlbumNoExistException, AuthException, NoAccessException {
+        return OkResponse.of(PhotoMapping.getInstance().getResponseMapping().convert(photoApiService.create(file, albumId)));
     }
 
     @GetMapping(PhotoApiRoutes.DOWNLOAD)

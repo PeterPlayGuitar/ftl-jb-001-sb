@@ -1,5 +1,7 @@
 package com.apeter.blog.todoTask.controller;
 
+import com.apeter.blog.auth.exceptions.AuthException;
+import com.apeter.blog.auth.exceptions.NoAccessException;
 import com.apeter.blog.base.api.request.SearchRequest;
 import com.apeter.blog.base.api.response.OkResponse;
 import com.apeter.blog.base.api.response.SearchResponse;
@@ -32,7 +34,7 @@ public class TodoTaskApiController {
             @ApiResponse(code = 200, message = "Success"),
             @ApiResponse(code = 400, message = "TodoTask already exists")
     })
-    public OkResponse<TodoTaskResponse> create(@RequestBody TodoTaskRequest request) throws TodoTaskExistException, UserNoExistException {
+    public OkResponse<TodoTaskResponse> create(@RequestBody TodoTaskRequest request) throws AuthException {
         return OkResponse.of(TodoTaskMapping.getInstance().getResponseMapping().convert(todoTaskApiService.create(request)));
     }
 
@@ -61,7 +63,7 @@ public class TodoTaskApiController {
     )
     public OkResponse<SearchResponse<TodoTaskResponse>> search(
             @ModelAttribute TodoTaskSearchRequest request
-    ) throws ResponseStatusException {
+    ) throws ResponseStatusException, AuthException {
         return OkResponse.of(TodoTaskMapping.getInstance().getSearchMapping().convert(
                 todoTaskApiService.search(request)
         ));
@@ -77,7 +79,7 @@ public class TodoTaskApiController {
     public OkResponse<TodoTaskResponse> update(
             @ApiParam(value = "TodoTask id") @PathVariable String id,
             @RequestBody TodoTaskRequest request
-    ) throws TodoTaskNoExistException {
+    ) throws TodoTaskNoExistException, NoAccessException, AuthException {
         return OkResponse.of(TodoTaskMapping.getInstance().getResponseMapping().convert(
                 todoTaskApiService.update(request)
         ));
@@ -93,7 +95,7 @@ public class TodoTaskApiController {
     public OkResponse<String> deleteById(
             @ApiParam(value = "TodoTask id")
             @PathVariable ObjectId id
-    ) {
+    ) throws NoAccessException, AuthException, ChangeSetPersister.NotFoundException {
         todoTaskApiService.deleteById(id);
         return OkResponse.of(HttpStatus.OK.toString());
     }

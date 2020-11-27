@@ -3,12 +3,18 @@ package com.apeter.blog.auth.service;
 import com.apeter.blog.auth.api.request.AuthRequest;
 import com.apeter.blog.auth.entity.CustomUserDetails;
 import com.apeter.blog.auth.exceptions.AuthException;
+import com.apeter.blog.security.JwtFiler;
 import com.apeter.blog.security.JwtProvider;
 import com.apeter.blog.user.exception.UserNoExistException;
 import com.apeter.blog.user.model.UserDoc;
 import com.apeter.blog.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+
+import javax.servlet.http.HttpServletRequest;
 
 @Component
 @RequiredArgsConstructor
@@ -38,6 +44,25 @@ public class AuthService {
 
         String token = jwtProvider.generateToken(authRequest.getEmail());
         return token;
+    }
+
+    public static HttpServletRequest getCurrentHttpRequest() {
+        RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
+        if (requestAttributes instanceof ServletRequestAttributes) {
+            HttpServletRequest request = ((ServletRequestAttributes) requestAttributes).getRequest();
+            return request;
+        }
+        return null;
+    }
+
+    public UserDoc currentUser() throws AuthException {
+        try {
+            String email = jwtProvider.getEmailFromToken(JwtFiler.getTokenFromRequest(getCurrentHttpRequest()));
+            UserDoc userDoc = userRepository.findByEmail(email).orElseThrow(UserNoExistException::new);
+            return userDoc;
+        } catch (Exception e) {
+            throw new AuthException();
+        }
     }
 
 }
