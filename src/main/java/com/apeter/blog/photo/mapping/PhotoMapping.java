@@ -6,27 +6,22 @@ import com.apeter.blog.photo.api.request.PhotoRequest;
 import com.apeter.blog.photo.api.response.PhotoResponse;
 import com.apeter.blog.photo.model.PhotoDoc;
 import lombok.Getter;
+import org.bson.types.ObjectId;
 
 import java.util.stream.Collectors;
 
 @Getter
 public class PhotoMapping {
-    public static class RequestMapping extends BaseMapping<PhotoRequest, PhotoDoc> {
+    public static class RequestMapping{
 
-        @Override
-        public PhotoDoc convert(PhotoRequest photoRequest) {
+        public PhotoDoc convert(PhotoRequest photoRequest, ObjectId owenerId) {
             return PhotoDoc.builder()
                     .id(photoRequest.getId())
                     .title(photoRequest.getTitle())
-                    .ownerId(photoRequest.getOwnerId())
+                    .ownerId(owenerId)
                     .albumId(photoRequest.getAlbumId())
                     .contentType(photoRequest.getContentType())
                     .build();
-        }
-
-        @Override
-        public PhotoRequest revert(PhotoDoc photoDoc) {
-            throw new RuntimeException("don't use this");
         }
     }
 

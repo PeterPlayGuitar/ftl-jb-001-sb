@@ -9,7 +9,6 @@ import org.bson.types.ObjectId;
 @Setter
 @ApiModel(value = "Album request", description = "model for update album")
 public class AlbumRequest {
-            private ObjectId id;
-            private String title;
-            private ObjectId ownerId;
+    private ObjectId id;
+    private String title;
 }

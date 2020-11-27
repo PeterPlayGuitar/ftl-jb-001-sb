@@ -1,5 +1,7 @@
 package com.apeter.blog.user.controller;
 
+import com.apeter.blog.auth.exceptions.AuthException;
+import com.apeter.blog.auth.exceptions.NoAccessException;
 import com.apeter.blog.base.api.request.SearchRequest;
 import com.apeter.blog.base.api.response.OkResponse;
 import com.apeter.blog.base.api.response.SearchResponse;
@@ -69,7 +71,7 @@ public class UserApiController {
     public OkResponse<UserFullResponse> update(
             @ApiParam(value = "User id") @PathVariable String id,
             @RequestBody UserRequest request
-    ) throws UserNoExistException {
+    ) throws AuthException {
         return OkResponse.of(UserMapping.getInstance().getResponseFullMapping().convert(
                 userApiService.update(request)
         ));
@@ -85,7 +87,7 @@ public class UserApiController {
     public OkResponse<String> deleteById(
             @ApiParam(value = "User id")
             @PathVariable ObjectId id
-    ) {
+    ) throws AuthException, NoAccessException {
         userApiService.deleteById(id);
         return OkResponse.of(HttpStatus.OK.toString());
     }

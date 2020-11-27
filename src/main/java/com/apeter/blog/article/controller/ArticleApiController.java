@@ -1,5 +1,7 @@
 package com.apeter.blog.article.controller;
 
+import com.apeter.blog.auth.exceptions.AuthException;
+import com.apeter.blog.auth.exceptions.NoAccessException;
 import com.apeter.blog.base.api.request.SearchRequest;
 import com.apeter.blog.base.api.response.OkResponse;
 import com.apeter.blog.base.api.response.SearchResponse;
@@ -49,7 +51,7 @@ public class ArticleApiController {
             @ApiResponse(code = 200, message = "Success"),
             @ApiResponse(code = 400, message = "Article already exists")
     })
-    public OkResponse<ArticleResponse> create(@RequestBody ArticleRequest request) throws ArticleExistException, UserNoExistException {
+    public OkResponse<ArticleResponse> create(@RequestBody ArticleRequest request) throws AuthException {
         return OkResponse.of(ArticleMapping.getInstance().getResponseMapping().convert(articleApiService.create(request)));
     }
 
@@ -78,7 +80,7 @@ public class ArticleApiController {
     public OkResponse<ArticleResponse> update(
             @ApiParam(value = "Article id") @PathVariable String id,
             @RequestBody ArticleRequest request
-    ) throws ArticleNoExistException {
+    ) throws ArticleNoExistException, AuthException, NoAccessException {
         return OkResponse.of(ArticleMapping.getInstance().getResponseMapping().convert(
                 articleApiService.update(request)
         ));
@@ -94,7 +96,7 @@ public class ArticleApiController {
     public OkResponse<String> deleteById(
             @ApiParam(value = "Article id")
             @PathVariable ObjectId id
-    ) {
+    ) throws NoAccessException, AuthException, ChangeSetPersister.NotFoundException {
         articleApiService.deleteById(id);
         return OkResponse.of(HttpStatus.OK.toString());
     }

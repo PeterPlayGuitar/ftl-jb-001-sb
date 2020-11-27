@@ -1,5 +1,7 @@
 package com.apeter.blog.album.controller;
 
+import com.apeter.blog.auth.exceptions.AuthException;
+import com.apeter.blog.auth.exceptions.NoAccessException;
 import com.apeter.blog.base.api.request.SearchRequest;
 import com.apeter.blog.base.api.response.OkResponse;
 import com.apeter.blog.base.api.response.SearchResponse;
@@ -33,7 +35,7 @@ public class AlbumApiController {
             @ApiResponse(code = 200, message = "Success"),
             @ApiResponse(code = 400, message = "Album already exists")
     })
-    public OkResponse<AlbumResponse> create(@RequestBody AlbumRequest request) throws AlbumExistException, UserNoExistException {
+    public OkResponse<AlbumResponse> create(@RequestBody AlbumRequest request) throws AuthException {
 //        Integer i = 3/0;
 
         return OkResponse.of(AlbumMapping.getInstance().getResponseMapping().convert(albumApiService.create(request)));
@@ -74,13 +76,16 @@ public class AlbumApiController {
     @ApiOperation(value = "update album", notes = "Use this when you need to update album")
     @ApiResponses(
             value = {
-                    @ApiResponse(code = 200, message = "Success")
+                    @ApiResponse(code = 200, message = "Success"),
+                    @ApiResponse(code = 400, message = "Album id is invalid"),
+                    @ApiResponse(code = 401, message = "Need Auth"),
+                    @ApiResponse(code = 403, message = "Not Access")
             }
     )
     public OkResponse<AlbumResponse> update(
             @ApiParam(value = "Album id") @PathVariable String id,
             @RequestBody AlbumRequest request
-    ) throws AlbumNoExistException {
+    ) throws AlbumNoExistException, NoAccessException, AuthException {
         return OkResponse.of(AlbumMapping.getInstance().getResponseMapping().convert(
                 albumApiService.update(request)
         ));
@@ -96,7 +101,7 @@ public class AlbumApiController {
     public OkResponse<String> deleteById(
             @ApiParam(value = "Album id")
             @PathVariable ObjectId id
-    ) {
+    ) throws AuthException, NoAccessException, ChangeSetPersister.NotFoundException {
         albumApiService.deleteById(id);
         return OkResponse.of(HttpStatus.OK.toString());
     }

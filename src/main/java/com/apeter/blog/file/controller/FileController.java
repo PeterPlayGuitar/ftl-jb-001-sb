@@ -1,5 +1,6 @@
 package com.apeter.blog.file.controller;
 
+import com.apeter.blog.auth.exceptions.AuthException;
 import com.apeter.blog.base.api.request.SearchRequest;
 import com.apeter.blog.base.api.response.OkResponse;
 import com.apeter.blog.base.api.response.SearchResponse;
@@ -37,8 +38,8 @@ public class FileController {
             @ApiResponse(code = 400, message = "File already exists")
     })
     public @ResponseBody
-    OkResponse<FileResponse> create(@RequestParam MultipartFile file, @RequestParam ObjectId ownerId) throws IOException, UserNoExistException {
-        return OkResponse.of(FileMapping.getInstance().getResponseMapping().convert(fileApiService.create(file, ownerId)));
+    OkResponse<FileResponse> create(@RequestParam MultipartFile file) throws IOException, UserNoExistException, AuthException {
+        return OkResponse.of(FileMapping.getInstance().getResponseMapping().convert(fileApiService.create(file)));
     }
 
     @GetMapping(FileApiRoutes.DOWNLOAD)

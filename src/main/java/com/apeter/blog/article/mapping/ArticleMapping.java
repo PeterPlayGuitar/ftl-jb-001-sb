@@ -6,26 +6,21 @@ import com.apeter.blog.article.api.request.ArticleRequest;
 import com.apeter.blog.article.api.response.ArticleResponse;
 import com.apeter.blog.article.model.ArticleDoc;
 import lombok.Getter;
+import org.bson.types.ObjectId;
 
 import java.util.stream.Collectors;
 
 @Getter
 public class ArticleMapping {
-    public static class RequestMapping extends BaseMapping<ArticleRequest, ArticleDoc> {
+    public static class RequestMapping {
 
-        @Override
-        public ArticleDoc convert(ArticleRequest articleRequest) {
+        public ArticleDoc convert(ArticleRequest articleRequest, ObjectId ownerId) {
             return ArticleDoc.builder()
                     .id(articleRequest.getId())
                     .title(articleRequest.getTitle())
                     .body(articleRequest.getBody())
-                    .ownerId(articleRequest.getOwnerId())
+                    .ownerId(ownerId)
                     .build();
-        }
-
-        @Override
-        public ArticleRequest revert(ArticleDoc articleDoc) {
-            throw new RuntimeException("don't use this");
         }
     }
 

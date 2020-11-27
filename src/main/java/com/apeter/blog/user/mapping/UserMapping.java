@@ -7,26 +7,21 @@ import com.apeter.blog.user.api.response.UserFullResponse;
 import com.apeter.blog.user.api.response.UserResponse;
 import com.apeter.blog.user.model.UserDoc;
 import lombok.Getter;
+import org.bson.types.ObjectId;
 
 import java.util.stream.Collectors;
 
 @Getter
 public class UserMapping {
-    public static class RequestMapping extends BaseMapping<UserRequest, UserDoc> {
+    public static class RequestMapping {
 
-        @Override
-        public UserDoc convert(UserRequest userRequest) {
+        public UserDoc convert(UserRequest userRequest, ObjectId objectId) {
             return UserDoc.builder()
-                    .id(userRequest.getId())
+                    .id(objectId)
                     .firstName(userRequest.getFirstName())
                     .lastName(userRequest.getLastName())
                     .email(userRequest.getEmail())
                     .build();
-        }
-
-        @Override
-        public UserRequest revert(UserDoc userDoc) {
-            throw new RuntimeException("don't use this");
         }
     }
 

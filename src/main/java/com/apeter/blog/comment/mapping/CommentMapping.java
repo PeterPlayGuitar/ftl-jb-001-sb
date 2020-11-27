@@ -6,26 +6,21 @@ import com.apeter.blog.comment.api.request.CommentRequest;
 import com.apeter.blog.comment.api.response.CommentResponse;
 import com.apeter.blog.comment.model.CommentDoc;
 import lombok.Getter;
+import org.bson.types.ObjectId;
 
 import java.util.stream.Collectors;
 
 @Getter
 public class CommentMapping {
-    public static class RequestMapping extends BaseMapping<CommentRequest, CommentDoc> {
+    public static class RequestMapping{
 
-        @Override
-        public CommentDoc convert(CommentRequest commentRequest) {
+        public CommentDoc convert(CommentRequest commentRequest, ObjectId userId) {
             return CommentDoc.builder()
                     .id(commentRequest.getId())
                     .articleId(commentRequest.getArticleId())
-                    .userId(commentRequest.getUserId())
+                    .userId(userId)
                     .message(commentRequest.getMessage())
                     .build();
-        }
-
-        @Override
-        public CommentRequest revert(CommentDoc commentDoc) {
-            throw new RuntimeException("don't use this");
         }
     }
 
